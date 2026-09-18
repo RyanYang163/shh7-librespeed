@@ -19,6 +19,13 @@ on:
 permissions:
   contents: write
 
+env:
+  # 上游版本锁定 —— 升级时改这里，不要用 floating 分支
+  UPSTREAM_REPO: "librespeed/speedtest"
+  UPSTREAM_TAG: "v6.3.0"
+  # 产物是纯静态前端（true）还是自带二进制（false）
+  BUILD_FROM_UPSTREAM: "static"
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -66,6 +73,23 @@ jobs:
             tar -cjf webui.bz2 -C webui/ .
             echo "已由 webui/ 生成 webui.bz2"
           fi
+
+      - name: 拉取上游静态文件
+        if: env.BUILD_FROM_UPSTREAM == 'static'
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://codeload.github.com/${UPSTREAM_REPO}/tar.gz/refs/tags/${UPSTREAM_TAG}" -o /tmp/up.tgz
+          mkdir -p /tmp/up && tar -xzf /tmp/up.tgz -C /tmp/up --strip-components=1
+          rm -rf "${GITHUB_WORKSPACE}/webui"
+          mkdir -p "${GITHUB_WORKSPACE}/webui"
+          cd /tmp/up
+          # 纯静态部署所需文件（不含 PHP/Node 后端）
+          cp index.html index-classic.html index-modern.html design-switch.js \
+             speedtest.js speedtest_worker.js stability.html stability_worker.js \
+             favicon.ico manifest.webmanifest settings.json config.json \
+             server-list.json LICENSE "${GITHUB_WORKSPACE}/webui/"
+          [ -d images ] && cp -r images "${GITHUB_WORKSPACE}/webui/" || true
+          echo "静态产物已就位：$(du -sh "${GITHUB_WORKSPACE}/webui" | cut -f1)"
 
       - name: 构建 Deb 包
         run: |
