@@ -1,0 +1,9 @@
+{
+  "name": "LibreSpeed",
+  "license": "LGPL-3.0",
+  "port": 18807,
+  "license_url": "https://raw.githubusercontent.com/librespeed/speedtest/master/LICENSE",
+  "en": "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput.",
+  "features": "- HTML5 browser-based speed test (no client software)\n- Measures ping, jitter, download and upload\n- Runs entirely client-side; telemetry disabled\n- No database or user accounts",
+  "date": "2026-09-20"
+}
