@@ -1,0 +1,37 @@
+# ============================================================================
+# LibreSpeed — TOS 7 application package
+#
+# Upstream : https://github.com/librespeed/speedtest
+# License  : LGPL-3.0
+# Copyright: upstream project contributors (see https://github.com/librespeed/speedtest)
+#
+# This compose file is part of the TOS platform integration only. The image
+# below is published by the upstream project and is used unmodified.
+# Full license text: see LICENSE in the repository root.
+# ============================================================================
+services:
+  shh7-librespeed:
+    image: linuxserver/librespeed:6.3.0
+    container_name: shh7-librespeed
+    restart: unless-stopped
+    ports:
+      - "18807:80"
+    volumes:
+      - /Volume*/DockerAppData/shh7-librespeed/data:/config
+      - /Volume*/DockerAppData/shh7-librespeed/www:/config/www
+    environment:
+      - TZ=Asia/Shanghai
+      - PUID=1000
+      - PGID=1000
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+x-app-meta:
+  web:
+    port: 18807
+    protocol: http

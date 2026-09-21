@@ -1,9 +1,0 @@
-Package: shh7-librespeed
-Version: 1.0.3
-Architecture: amd64
-Section: utils
-Priority: optional
-Maintainer: shh <shh@users.noreply.github.com>
-Depends: systemd, nginx
-Description: LibreSpeed
- Self-hosted HTML5 speed test server for measuring LAN and WAN throughput.

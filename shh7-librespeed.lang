@@ -3,95 +3,95 @@ name = "LibreSpeed"
 auth = "shh"
 descript = "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput."
 release_note = "1. Initial release."
-important = "Requires TOS 7.0 or later."
+important = "Requires DockerEngine from the TOS App Center."
 
 [zh-cn]
 name = "LibreSpeed"
 auth = "shh"
 descript = "自建网络测速服务端：浏览器打开即可测 NAS 与各设备之间的内网带宽。"
 release_note = "1. 首次发布。"
-important = "需要 TOS 7.0 或更高版本。"
+important = "需要先在 TOS 应用中心安装并启用 DockerEngine。"
 
 [zh-hk]
 name = "LibreSpeed"
 auth = "shh"
 descript = "自建网络测速服务端：浏览器打开即可测 NAS 与各设备之间的内网带宽。"
 release_note = "1. 首次發佈。"
-important = "需要 TOS 7.0 或更高版本。"
+important = "需要先在 TOS 應用中心安裝並啟用 DockerEngine。"
 
 [fr-fr]
 name = "LibreSpeed"
 auth = "shh"
 descript = "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput."
 release_note = "1. Initial release."
-important = "Requires TOS 7.0 or later."
+important = "Requires DockerEngine from the TOS App Center."
 
 [de-de]
 name = "LibreSpeed"
 auth = "shh"
 descript = "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput."
 release_note = "1. Initial release."
-important = "Requires TOS 7.0 or later."
+important = "Requires DockerEngine from the TOS App Center."
 
 [it-it]
 name = "LibreSpeed"
 auth = "shh"
 descript = "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput."
 release_note = "1. Initial release."
-important = "Requires TOS 7.0 or later."
+important = "Requires DockerEngine from the TOS App Center."
 
 [es-es]
 name = "LibreSpeed"
 auth = "shh"
 descript = "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput."
 release_note = "1. Initial release."
-important = "Requires TOS 7.0 or later."
+important = "Requires DockerEngine from the TOS App Center."
 
 [hu-hu]
 name = "LibreSpeed"
 auth = "shh"
 descript = "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput."
 release_note = "1. Initial release."
-important = "Requires TOS 7.0 or later."
+important = "Requires DockerEngine from the TOS App Center."
 
 [ja-jp]
 name = "LibreSpeed"
 auth = "shh"
 descript = "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput."
 release_note = "1. Initial release."
-important = "Requires TOS 7.0 or later."
+important = "Requires DockerEngine from the TOS App Center."
 
 [ko-kr]
 name = "LibreSpeed"
 auth = "shh"
 descript = "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput."
 release_note = "1. Initial release."
-important = "Requires TOS 7.0 or later."
+important = "Requires DockerEngine from the TOS App Center."
 
 [pl-pl]
 name = "LibreSpeed"
 auth = "shh"
 descript = "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput."
 release_note = "1. Initial release."
-important = "Requires TOS 7.0 or later."
+important = "Requires DockerEngine from the TOS App Center."
 
 [ru-ru]
 name = "LibreSpeed"
 auth = "shh"
 descript = "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput."
 release_note = "1. Initial release."
-important = "Requires TOS 7.0 or later."
+important = "Requires DockerEngine from the TOS App Center."
 
 [tr-tr]
 name = "LibreSpeed"
 auth = "shh"
 descript = "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput."
 release_note = "1. Initial release."
-important = "Requires TOS 7.0 or later."
+important = "Requires DockerEngine from the TOS App Center."
 
 [pt-pt]
 name = "LibreSpeed"
 auth = "shh"
 descript = "Self-hosted HTML5 speed test server for measuring LAN and WAN throughput."
 release_note = "1. Initial release."
-important = "Requires TOS 7.0 or later."
+important = "Requires DockerEngine from the TOS App Center."

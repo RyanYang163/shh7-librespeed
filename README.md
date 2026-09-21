@@ -19,13 +19,13 @@ Self-hosted HTML5 speed test server for measuring LAN and WAN throughput.
 
 ## Installation
 
-1. Requirements: TOS 7.0+ and systemd + nginx
+1. Requirements: TOS 7.0+ and Docker Engine (install from the TOS App Center)
 2. Install from the TOS App Center
 3. Open the app and complete initial configuration
 
 ## Usage
 
-1. Access URL: `/shh7-librespeed/`
+1. Access URL: `http://${ip}:18807`
 2. Default credentials: see upstream documentation
 3. Key settings: see upstream documentation
 

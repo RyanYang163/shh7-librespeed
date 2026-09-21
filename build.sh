@@ -1,94 +1,60 @@
 #!/bin/bash
 # ============================================================
-# Deb 单包模式打包 —— TOS 7
-# 产物：<appid>_<platform>.deb（文件名不含版本号，见指引 5.9）
+# Docker 应用打包 —— TOS 7
+# 产物：<appid>.tar.gz，根层恰好 4 个文件
 # ============================================================
 set -e
 APPID="$(python3 -c "import json;print(json.load(open('config.ini'))['id'])")"
 VERSION="$(python3 -c "import json;print(json.load(open('config.ini'))['version'])")"
-PLATFORM="${1:-x86_64}"
-[ "$PLATFORM" = "aarch64" ] && DPKG_ARCH=arm64 || DPKG_ARCH=amd64
-
-STAGING="build/${PLATFORM}/staging"
 OUT="build/output"
 
-echo "=== Building ${APPID} v${VERSION} for ${PLATFORM} ==="
+echo "=== Building ${APPID} v${VERSION} (docker) ==="
 
 # ---- 前置校验 ----
 python3 - <<'PY'
-import json, sys
+import json, sys, re
 c = json.load(open('config.ini'))
 errs = []
 if 'type' in c and 'open_path' in c:
-    errs.append("type 与 open_path 互斥")
-if c.get('application_type') != 'deb':
-    errs.append("application_type 必须为 deb")
-if 'path' in c and '${ip}' not in c['path'] and c['path'].startswith('http'):
-    errs.append("外开 path 必须使用 ${ip} 占位，不得硬编码 IP")
+    errs.append("type 与 open_path 互斥，不能同时出现")
+if c.get('application_type') != 'docker':
+    errs.append("application_type 必须为 docker")
+if 'DockerEngine' not in c.get('depend', []):
+    errs.append("Docker 应用 depend 必须包含 DockerEngine")
 if errs:
     print("ERROR: " + "; ".join(errs)); sys.exit(1)
 PY
 
-# 前端产物：由 webui/ 生成 webui.bz2（固定文件名，bzip2 的 tar）
-if [ -d webui ] && [ ! -f webui.bz2 ]; then
-    echo "  生成 webui.bz2 ..."
-    tar -cjf webui.bz2 -C webui/ .
+if grep -q "TAG-VERIFY" docker-compose.yml; then
+    echo "ERROR: docker-compose.yml 中仍有 TAG-VERIFY 占位符，请先填入经验证的镜像版本号。"
+    echo "       本机无法访问 Docker Hub，TAG 必须由开发者核实后填写。"
+    exit 1
 fi
 
-if python3 -c "import json,sys;c=json.load(open('config.ini'));sys.exit(0 if c.get('type')=='iframe' else 1)"; then
-    [ -f webui.bz2 ] || { echo "ERROR: 内嵌(iframe)应用必须提供 webui.bz2"; exit 1; }
+if grep -qE "image:.*:latest" docker-compose.yml; then
+    echo "ERROR: 禁止使用 :latest 标签，必须锁定具体版本。"
+    exit 1
 fi
 
-# 检查占位符
-for d in bin depends; do
-    if [ -d "$d" ] && grep -rq "PLACEHOLDER" "$d" 2>/dev/null; then
-        echo "ERROR: $d/ 中仍存在 PLACEHOLDER 占位文件，请先放入真实产物。"; exit 1
-    fi
+# 指引 6.3：container_name 必须与应用 id 一致
+if ! grep -q "container_name: ${APPID}" docker-compose.yml; then
+    echo "ERROR: container_name 必须与应用 id (${APPID}) 一致。"
+    exit 1
+fi
+
+for f in config.ini "${APPID}.lang" "${APPID}.svg" docker-compose.yml; do
+    [ -f "$f" ] || { echo "ERROR: 缺少必需文件 $f"; exit 1; }
 done
 
-rm -rf "build/${PLATFORM}" "$OUT"
-mkdir -p "${STAGING}/usr/local/${APPID}/bin" "${STAGING}/DEBIAN" "$OUT"
-
-cp config.ini "${APPID}.lang" "${STAGING}/usr/local/${APPID}/"
-[ -f "${APPID}.env" ] && cp "${APPID}.env" "${STAGING}/usr/local/${APPID}/"
-# 合规材料必须随包分发（审核项 C2/C3）：许可证全文、署名、隐私政策
-MISSING=""
-for f in LICENSE NOTICE PRIVACY.md; do
-    if [ -f "$f" ]; then
-        cp "$f" "${STAGING}/usr/local/${APPID}/"
-    else
-        MISSING="$MISSING $f"
-    fi
-done
-[ -n "$MISSING" ] && { echo "ERROR: 缺少合规文件:$MISSING（审核项 C2/C3 会失败）"; exit 1; }
-echo "  合规材料已入包: LICENSE NOTICE PRIVACY.md"
-[ -f webui.bz2 ]      && cp webui.bz2      "${STAGING}/usr/local/${APPID}/"
-[ -d images ]         && cp -r images      "${STAGING}/usr/local/${APPID}/"
-[ -d init.d ]         && cp -r init.d      "${STAGING}/usr/local/${APPID}/"
-[ -d nginx ]          && cp -r nginx       "${STAGING}/usr/local/${APPID}/"
-[ -d depends ]        && cp -r depends     "${STAGING}/usr/local/${APPID}/"
-if [ -d bin ]; then
-    # 按目标架构挑选二进制：bin/<appid>-<platform>
-    BIN_SRC="bin/${APPID}-${PLATFORM}"
-    if [ -f "$BIN_SRC" ]; then
-        cp "$BIN_SRC" "${STAGING}/usr/local/${APPID}/bin/${APPID}"
-        chmod +x "${STAGING}/usr/local/${APPID}/bin/${APPID}"
-        echo "  已放入二进制：${BIN_SRC}"
-    else
-        cp -r bin/* "${STAGING}/usr/local/${APPID}/bin/" 2>/dev/null || true
-        chmod +x "${STAGING}/usr/local/${APPID}/bin/"* 2>/dev/null || true
-    fi
-fi
-
-sed "s/^Architecture:.*$/Architecture: ${DPKG_ARCH}/" DEBIAN/control > "${STAGING}/DEBIAN/control"
-cp DEBIAN/postinst DEBIAN/prerm DEBIAN/postrm "${STAGING}/DEBIAN/"
-chmod 755 "${STAGING}/DEBIAN/postinst" "${STAGING}/DEBIAN/prerm" "${STAGING}/DEBIAN/postrm"
-
-# 指引 5.9：包文件名不含版本号
-dpkg-deb --build "${STAGING}" "${OUT}/${APPID}_${PLATFORM}.deb"
-( cd "$OUT" && sha256sum "${APPID}_${PLATFORM}.deb" > "${APPID}_${PLATFORM}.deb.sha256" )
+rm -rf "$OUT"; mkdir -p "$OUT"
+# 指引 6.2：归档根层恰好 4 个文件，README 等一律不得进入
+tar -czf "${OUT}/${APPID}.tar.gz" config.ini "${APPID}.lang" "${APPID}.svg" docker-compose.yml
+( cd "$OUT" && sha256sum "${APPID}.tar.gz" > "${APPID}.tar.gz.sha256" )
 
 echo ""
 echo "=== 完成 ==="
-dpkg-deb -I "${OUT}/${APPID}_${PLATFORM}.deb" | head -20
+# 核对根层文件数必须为 4
+N=$(tar -tzf "${OUT}/${APPID}.tar.gz" | grep -c '[^/]$')
+echo "  归档根层文件数：${N}（必须为 4）"
+[ "$N" -eq 4 ] || { echo "ERROR: 归档根层文件数不为 4，将被驳回"; exit 1; }
 ls -lh "$OUT"

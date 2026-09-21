@@ -1,6 +1,0 @@
-#!/bin/bash
-set -e
-APPID="shh7-librespeed"
-systemctl stop "${APPID}.service" 2>/dev/null || true
-systemctl disable "${APPID}.service" 2>/dev/null || true
-exit 0
