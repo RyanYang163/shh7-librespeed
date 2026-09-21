@@ -29,8 +29,8 @@ LockPersonality=true
 RemoveIPC=true
 SystemCallArchitectures=native
 
-# ---- 可写路径（ProtectSystem=strict 下必须显式放开）----
-ReadWritePaths=/usr/local/shh7-librespeed /var/lib/shh7-librespeed /var/log/shh7-librespeed
+ReadWritePaths=/usr/local/shh7-librespeed /var/lib/shh7-librespeed
+LogsDirectory=shh7-librespeed
 
 LimitNOFILE=65536
 
